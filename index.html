@@ -1,0 +1,203 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Expense</title>
+    <meta name="viewport" content="width=device-width initial-scale=1"> 
+       <link
+			rel="stylesheet"
+			href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+			integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+			crossorigin="anonymous"
+        />
+        
+        <script
+			defer
+			src="https://use.fontawesome.com/releases/v5.7.2/js/all.js"
+			integrity="sha384-0pzryjIRos8mFBWMzSSZApWtPl/5++eIfzYmTgBBmXYdhvxPc+XcFEk+zJwDgWbP"
+			crossorigin="anonymous"
+        ></script>
+
+        
+        
+        
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark" style="height: 100px">
+        <span class="navbar-brand mb-0 h1" style="padding-left: 5px;  font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">MY MONEY TRACK</span>
+        <span class="navbar-brand mb-0 h1" id="balanceid"></span>
+    </nav>
+
+    <div style="text-align: center;">
+        <h5 style="font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-s0erif; text-align: center; padding-top: 20px; ">Enter The Your Monthly Income:</h5>
+        <input type="text" style="padding-top: 20px;" id="inputincome" >
+        <button id="income" style="height:30px;">Click here</button>
+    </div>
+    
+    <div class="container-fluid bg-light" style="min-height: 100vh ">
+        <div class="container">
+            
+            <h1 id="headingtotal" style="padding-top: 20px; font-size: large;"></h1>
+
+            <div class="jumbotron mt-4">
+					<div class="input-group mb-3">
+						<input
+							type="text"
+                            class="form-control"
+                            id="inputamount"
+							placeholder="Amount spent"
+							aria-label="Amount spent"
+							aria-describedby="spent in rupee"
+						/>
+						<div class="input-group-append">
+							<span class="input-group-text" id="spent in rupee">₹</span>
+						</div>
+					</div>
+					<div class="input-group mb-3">
+						<div class="input-group-prepend">
+							<span class="input-group-text" id="spent at">@</span>
+						</div>
+						<input
+							type="text"
+                            class="form-control"
+                            id="inputDesc" 
+							placeholder="spent On"
+							aria-label="spent On"
+							aria-describedby="spent at"
+						/>
+						<div class="input-group-append">
+							<button class="btn btn-outline-primary" type="button" id="btnaddexpense">Add</button>
+						</div>
+					</div>
+                </div>
+            <div id="expenseTable"></div>
+        </div>
+    </div>
+    <div>
+        <ul class="list-group" id="expenseTable"></ul>
+    </div>   
+     
+   
+    <script>
+
+        let finalbalance=0;
+        let incomeint=0; 
+
+        const headingel =document.querySelector("#headingtotal");
+        const inputDescel = document.querySelector("#inputDesc");
+        const inputElement=document.querySelector("#inputamount");
+        const expenseTableel=document.querySelector("#expenseTable");
+        const incomeel = document.querySelector("#income");
+        
+        incomeel.addEventListener("click" ,totalbalnce, false)
+
+        let totalExpense = 0 ;
+        headingel.textContent=totalExpense;
+
+        const allexpense = [];
+        function addExpenseToTotal() {
+            const expenseItem = {};
+           
+           const textamount =inputElement.value;
+        
+           const textDesc = inputDescel.value;
+        
+           const expense = parseInt(textamount , 10);
+        
+           
+           expenseItem.desc =textDesc;
+           expenseItem.amount= textamount;
+           expenseItem.moment= new Date();
+
+           allexpense.push(expenseItem);
+           
+
+           totalExpense = totalExpense + expense;
+
+           const someText = ` Total Expense : ${totalExpense}` ;
+           headingel.textContent= someText;
+            incomeint= incomeint- expense;
+           const mybalance= ` Balance : ${incomeint}`;
+           balanceid.textContent=mybalance;
+
+
+
+
+            renderList(allexpense);
+        }   
+        
+        const element=document.querySelector("#btnaddexpense");
+        element.addEventListener("click", addExpenseToTotal , false);
+
+        function totalbalnce (){
+            const incomeelement= document.querySelector("#inputincome");
+            const incometext = incomeelement.value;
+             incomeint =parseInt(incometext,10)
+           const mybalance= ` My Balance : ${incomeint}`;
+           balanceid.textContent=mybalance;
+
+        }
+
+
+        function getdatestring(moment){
+             return moment.toLocaleDateString('en-US' ,{ year:'numeric', month: 'long', day:'numeric',
+                        year: 'numeric',
+                         month: 'long',
+                         day: 'numeric'
+                        })
+        }
+
+        function deleteItem(datavalue){
+            
+
+            for (let i = 0; i < allexpense.length; i++) {  
+                  if (allexpense[i].moment.valueOf() === datavalue)
+                 {
+                     const deletedmoney= allexpense[i].amount;
+                     totalExpense= totalExpense- deletedmoney;
+                     const someText = ` Total Expense : ${totalExpense}` ;
+                     headingel.textContent= someText;
+                     incomeint=incomeint +parseInt( deletedmoney,10);
+                     const mybalance= ` Balance : ${incomeint}`;
+                     balanceid.textContent=mybalance;
+
+                   
+                 }   
+             }
+
+            const newArr = allexpense.filter(expense=> expense.moment.valueOf() !== datavalue );
+                   renderList(newArr);
+           
+            
+            }
+        
+            function renderList(arrOfList){
+                const allexpenseHTML = arrOfList.map( expense => createListItem(expense));
+                const joinedallexpenseHTML = allexpenseHTML.join("");
+                expenseTableel.innerHTML= joinedallexpenseHTML;
+            }
+
+        function createListItem({desc, amount , moment}){
+            return ` <li class="list-group-item d-flex justify-content-between">
+                <div class="d-flex flex-column">
+                    ${desc}
+                    <small class="text-muted">${getdatestring(moment)}</small>
+                </div>
+                <div>
+                    <span class="px-5">
+                        ${amount} 
+                    </span>
+                    <button type="button" 
+                            class="btn btn-outline-danger btn-sm"
+                            onclick="deleteItem(${moment.valueOf()})"
+                            >
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            </li> `
+
+        }
+
+    </script>
+</body>
+</html>
